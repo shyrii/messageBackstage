@@ -7,7 +7,7 @@ const leaveMessage = async (userID, content) => {
   }
 
 const deleteMessage = async (messageID) => {
-    await runPromise('delete from message where massageID=$messageID', {
+    await runPromise('delete from message where messageID=$messageID', {
       $messageID: messageID,
     })
     

@@ -3,7 +3,8 @@ const router = express.Router()
 const bodyParser = require('body-parser')
 // const multer = require('multer')
 // const parser = multer()
-const dao = require('../dao/message')
+const daoMessage = require('../dao/message')
+const daoUser = require('../dao/user')
 
 router.post('/api/message', bodyParser.json(), async (req, res) => {
     const userID = req.body.userID
@@ -15,9 +16,13 @@ router.post('/api/message', bodyParser.json(), async (req, res) => {
         })
     } else {
             try {
-                const result = await dao.leaveMessage(userID, content)
+                const result1 = await daoMessage.leaveMessage(userID, content)
+                const result2 = await daoUser.getIndex()
+                // const result3 = await daoUser.getMyMessage(userID)
                 res.send({
-                    error: 0
+                    error: 0,
+                    messages: result2,
+                    // myMessages: result3,
                 })
             } catch (e) {
                 console.log(e)
@@ -38,9 +43,13 @@ router.delete('/api/message/:messageID', bodyParser.json(), async (req, res) => 
         })
     } else {
             try {
-                const result = await dao.deleteMessage(messageID)
+                const result1 = await daoMessage.deleteMessage(messageID)
+                const result2 = await daoUser.getIndex()
+                // const result3 = await daoUser.getMyMessage(userID)
                 res.send({
-                    error: 0
+                    error: 0,
+                    messages: result2,
+                    // myMessages: result3,
                 })
             } catch (e) {
                 console.log(e)

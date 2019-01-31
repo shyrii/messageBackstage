@@ -67,8 +67,9 @@ router.post('/api/register', bodyParser.json(), async (req, res) => {
     }
 })
 
-router.get('/api/index', bodyParser.json(), async (req, res) => {
-    const result = await dao.getIndex()
+router.get('/api/index/:userID', bodyParser.json(), async (req, res) => {
+    const userID = req.params.userID
+    const result = await dao.getIndex(userID)
     if (result === null) {
         res.status(404).send({
             error: 1,
@@ -77,7 +78,39 @@ router.get('/api/index', bodyParser.json(), async (req, res) => {
     } else {
         res.send({
             error: 0,
-            comments: result
+            messages: result
+        })
+    }
+})
+
+router.get('/api/myMessage/:userID', bodyParser.json(), async (req, res) => {
+    const userID = req.params.userID
+    const result = await dao.getMyMessage(userID)
+    if (result === null) {
+        res.status(404).send({
+            error: 1,
+            message: 'error.'
+        })
+    } else {
+        res.send({
+            error: 0,
+            myMessages: result
+        })
+    }
+})
+
+router.get('/api/myLikeMessage/:userID', bodyParser.json(), async (req, res) => {
+    const userID = req.params.userID
+    const result = await dao.getLikeMessage(userID)
+    if (result === null) {
+        res.status(404).send({
+            error: 1,
+            message: 'error.'
+        })
+    } else {
+        res.send({
+            error: 0,
+            likeMessageID: result
         })
     }
 })

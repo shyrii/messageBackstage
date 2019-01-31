@@ -14,9 +14,11 @@ router.post('/api/comment/:messageID', bodyParser.json(), async (req, res) => {
         })
     } else {
             try {
-                const result = await dao.addComment(userID,messageID,content)
+                const result1 = await dao.addComment(userID,messageID,content)
+                const result2 = await dao.getComment(messageID)
                 res.send({
-                    error: 0
+                    error: 0,
+                    comments: result2
                 })
             } catch (e) {
                 console.log(e)
@@ -38,8 +40,10 @@ router.delete('/api/comment/:commentID', bodyParser.json(), async (req, res) => 
     } else {
             try {
                 const result = await dao.deleteComment(commentID)
+                const result2 = await dao.getComment(messageID)
                 res.send({
-                    error: 0
+                    error: 0,
+                    comments: result2
                 })
             } catch (e) {
                 console.log(e)
