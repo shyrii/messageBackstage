@@ -23,8 +23,8 @@ router.post('/api/login', bodyParser.json(), async (req, res) => {
         })
     } else {
         const result1 = await dao.userInfo(username, password)
-        const result2 = await dao.likeMessage(username, password)
-        const result3 = await dao.message(username, password)
+        // const result2 = await dao.likeMessage(username, password)
+        // const result3 = await dao.message(username, password)
 
         if (result1 === null) {
             res.status(404).send({
@@ -32,11 +32,12 @@ router.post('/api/login', bodyParser.json(), async (req, res) => {
                 message: 'User not exsist or password is not correct.'
             })
         } else {
+            req.session.user = result1.userID
             res.send({
                 error: 0,
                 userInfo: result1,
-                likeMessageID: result2,
-                messageID: result3
+                // likeMessageID: result2,
+                // messageID: result3
             })
         }
     }
@@ -69,18 +70,26 @@ router.post('/api/register', bodyParser.json(), async (req, res) => {
 
 router.get('/api/index/:userID', bodyParser.json(), async (req, res) => {
     const userID = req.params.userID
-    const result = await dao.getIndex(userID)
-    if (result === null) {
-        res.status(404).send({
-            error: 1,
-            message: 'message not exsist.'
-        })
+    if (req.session.user === parseInt(userID)) {
+        const result = await dao.getIndex(userID)
+        if (result === null) {
+            res.status(404).send({
+                error: 1,
+                message: 'message not exsist.'
+            })
+        } else {
+            res.send({
+                error: 0,
+                messages: result
+            })
+        }
     } else {
-        res.send({
-            error: 0,
-            messages: result
+        res.status(401).send({
+            error: 1,
+            message: 'Unauthorized.'
         })
     }
+
 })
 
 router.get('/api/myMessage/:userID', bodyParser.json(), async (req, res) => {
@@ -115,4 +124,10 @@ router.get('/api/myLikeMessage/:userID', bodyParser.json(), async (req, res) => 
     }
 })
 
+router.get('/api/logout',bodyParser.json(),async(req,res) => {
+    req.session.destroy();
+    res.send({
+        error: 0,
+    })
+})
 module.exports = router

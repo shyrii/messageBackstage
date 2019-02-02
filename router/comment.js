@@ -7,14 +7,15 @@ router.post('/api/comment/:messageID', bodyParser.json(), async (req, res) => {
     const userID = req.body.userID
     const content = req.body.content
     const messageID = req.params.messageID
-    if (!userID || !content || content.trim() === '' ||!messageID) {
-        res.status(400).send({
-            error: 1,
-            message: 'Bad Request.'
-        })
-    } else {
+    if (req.session.user === parseInt(userID)) {
+        if (!userID || !content || content.trim() === '' || !messageID) {
+            res.status(400).send({
+                error: 1,
+                message: 'Bad Request.'
+            })
+        } else {
             try {
-                const result1 = await dao.addComment(userID,messageID,content)
+                const result1 = await dao.addComment(userID, messageID, content)
                 const result2 = await dao.getComment(messageID)
                 res.send({
                     error: 0,
@@ -28,6 +29,13 @@ router.post('/api/comment/:messageID', bodyParser.json(), async (req, res) => {
                 })
             }
         }
+    } else {
+        res.status(400).send({
+            error: 1,
+            message: 'Bad Request.'
+        })
+    }
+
 })
 
 router.delete('/api/comment/:commentID', bodyParser.json(), async (req, res) => {
@@ -38,21 +46,21 @@ router.delete('/api/comment/:commentID', bodyParser.json(), async (req, res) => 
             message: 'Bad Request.'
         })
     } else {
-            try {
-                const result = await dao.deleteComment(commentID)
-                const result2 = await dao.getComment(messageID)
-                res.send({
-                    error: 0,
-                    comments: result2
-                })
-            } catch (e) {
-                console.log(e)
-                res.status(403).send({
-                    error: 1,
-                    message: 'delete fail.'
-                })
-            }
+        try {
+            const result = await dao.deleteComment(commentID)
+            const result2 = await dao.getComment(messageID)
+            res.send({
+                error: 0,
+                comments: result2
+            })
+        } catch (e) {
+            console.log(e)
+            res.status(403).send({
+                error: 1,
+                message: 'delete fail.'
+            })
         }
+    }
 })
 
 router.get('/api/comment/:messageID', bodyParser.json(), async (req, res) => {
@@ -65,9 +73,9 @@ router.get('/api/comment/:messageID', bodyParser.json(), async (req, res) => {
     } else {
         const result = await dao.getComment(messageID)
         if (result === null) {
-            res.status(404).send({
-                error: 1,
-                message: 'comment not exsist.'
+            res.send({
+                error: 0,
+                comments: []
             })
         } else {
             res.send({
@@ -75,6 +83,8 @@ router.get('/api/comment/:messageID', bodyParser.json(), async (req, res) => {
                 comments: result
             })
         }
+
+
     }
 })
 

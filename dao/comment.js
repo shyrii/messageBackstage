@@ -14,7 +14,7 @@ const deleteComment = async (commentID) => {
   }
   
 const getComment = async (messageID) => {
-    const result = await runPromise('select username,content,commentDate from comment inner join user on user.userID=comment.userID where messageID=$messageID',{
+    const result = await runPromise('select commentID,username,content,commentDate from comment inner join user on user.userID=comment.userID where messageID=$messageID',{
         $messageID: messageID
     })
     if (result.length === 0) {
